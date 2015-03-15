@@ -182,3 +182,12 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
+parser.cpp
+parser.hpp
+lexer.cpp
+dis.ass
+in.uc
+out.cuc
+
+tmp
