@@ -33,7 +33,7 @@
 	PrintExpressionStatement* printes;
 	PrintStringStatement* printss;
 	PrintFormattedStatement* printfs;
-	ScanStatemenet* scans;
+	ScanStatement* scans;
 	EmptyStatement* emptys;
 
 	std::string* string;
@@ -100,7 +100,7 @@ stmt : block { $$ = $<block>1; }
 	 | PRINT LEFT_BRACE expression RIGHT_BRACE EOS { $$ = new PrintExpressionStatement($<expr>3); }
 	 | PRINT LEFT_BRACE STRINGLIT RIGHT_BRACE EOS { $$ = new PrintStringStatement(std::string($3->c_str())); delete $3; }
 	 | PRINT LEFT_BRACE STRINGLIT COMMA expression RIGHT_BRACE EOS { $$ = new PrintFormattedStatement(std::string($3->c_str()), $<expr>5); delete $3; }
-	 | SCAN LEFT_BRACE identifier RIGHT_BRACE EOS { $$ = new ScanStatemenet($<ident>4); }
+	 | SCAN LEFT_BRACE identifier RIGHT_BRACE EOS { $$ = new ScanStatement($<ident>4); }
 	 ;
 
 expression : NUMBER { $$ = new Int($1); }

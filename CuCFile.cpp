@@ -11,6 +11,24 @@ void writeString(std::ofstream* out, std::string str)
 	out->write((const char*)str.c_str(), str.length());
 }
 
+unsigned int readInt(std::ifstream* in)
+{
+	char input[4];
+	in->read(input, 4);
+	unsigned int value = *((unsigned int*)input);
+	return value;
+}
+
+std::string readString(std::ifstream* in)
+{
+	unsigned int len = readInt(in);
+	char* str = new char[len];
+	in->read(str, len);
+	std::string s(str, len);
+	delete str;
+	return s;
+}
+
 CuCFile::CuCFile()
 {
 
@@ -36,7 +54,6 @@ void CuCFile::save(CuCFile* file, std::ofstream* out)
 	writeString(out, file->name);
 
 	// write code
-	writeInt(out, file->code_len);
 	out->write((const char*)file->code, file->code_len);
 
 	// write tables
@@ -59,5 +76,41 @@ void CuCFile::save(CuCFile* file, std::ofstream* out)
 
 CuCFile* CuCFile::parse(std::ifstream* in)
 {
-	return NULL;
+	unsigned int hr = readInt(in);
+	if (hr != header)
+	{
+		printf("Incorrect header! \n");
+		return NULL;
+	}
+
+	CuCFile* file = new CuCFile();
+	file->code_len = readInt(in);
+	file->code = new unsigned char[file->code_len];
+	unsigned int constNum = readInt(in);
+	unsigned int litNum = readInt(in);
+	unsigned int stringNum = readInt(in);
+	file->name = readString(in);
+	in->read((char*)file->code, file->code_len);
+
+	// read tables
+	{
+		for (unsigned int i = 0; i < constNum; i++)
+		{
+			file->consts.push_back(readInt(in));
+		}
+	}
+	{
+		for (unsigned int i = 0; i < litNum; i++)
+		{
+			file->literars.push_back(readString(in));
+		}
+	}
+	{
+		for (unsigned int i = 0; i < stringNum; i++)
+		{
+			file->strings.push_back(readString(in));
+		}
+	}
+
+	return file;
 }

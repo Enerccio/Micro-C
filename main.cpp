@@ -30,6 +30,24 @@ void compile(char* from, char* to)
 	delete output;
 }
 
+void disassemble(char* from, char* to)
+{
+	std::ifstream in;
+	in.open((const char*)from, std::ios::binary);
+	std::ofstream out;
+	out.open((const char*)to);
+
+	CuCFile* file = CuCFile::parse(&in);
+	in.close();
+
+	if (file != NULL)
+	{
+
+	}
+	
+	out.close();
+}
+
 
 int main(int argc, char** argv)
 {
@@ -47,7 +65,7 @@ int main(int argc, char** argv)
 	if (argc == 3)
 	{
 		compile(argv[1], "tmp");
-		// disassemble("tmp", argv[2]);
+		disassemble("tmp", argv[2]);
 		// run("tmp");
 	}
 

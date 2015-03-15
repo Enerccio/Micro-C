@@ -26,7 +26,12 @@ int isatty(int x){ return 0; }
 %option yylineno
 %option interactive
 
-binary   0[bB][01]+
+binary      0[bB][01]+
+digit		[0-9]
+alpha		[a-fA-F]
+hextail		({digit}|{alpha}){1,8}
+hex		    0[xX]{hextail}
+
 %x str
 
 %%
@@ -36,6 +41,18 @@ binary   0[bB][01]+
 "\n"					;
 "\r"					;
 {binary}			    { yylval.c = 0; for (char *p=yytext+2;*p;++p) { yylval.c*=2; yylval.c+= *p-'0'; } return NUMBER; }
+{hex}			        { 
+							yylval.c = 0; 
+							for (char *p=yytext+2;*p;++p) 
+							{ 
+								yylval.c*=16; 
+								if (*p < '9')
+									yylval.c+= *p-'0'; 
+								else
+									yylval.c+= *p-'A'+10; 
+							} 
+							return NUMBER; 
+						}
 false					{ yylval.c = 0; return NUMBER; }
 true					{ yylval.c = 1; return NUMBER; }
 [0-9]+					yylval.c=atoi(yytext); return NUMBER;

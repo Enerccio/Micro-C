@@ -185,12 +185,12 @@ public:
 	virtual NodeType GetType(){ return PRINT_FORMAT_STATEMENT; }
 };
 
-class ScanStatemenet : public Statement
+class ScanStatement : public Statement
 {
 public:
 	Identifier* ident;
-	ScanStatemenet(Identifier* i) : ident(i) {}
-	virtual ~ScanStatemenet(){ delete ident; }
+	ScanStatement(Identifier* i) : ident(i) {}
+	virtual ~ScanStatement(){ delete ident; }
 	virtual NodeType GetType(){ return SCAN_STATEMENT; }
 };
 
