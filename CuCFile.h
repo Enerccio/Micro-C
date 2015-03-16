@@ -5,13 +5,13 @@
 #include <vector>
 #include <string>
 
-class VM;
+class MicroCVM;
 class Compiler;
 class Disassembler;
 
 class CuCFile
 {
-	friend class VM;
+	friend class MicroCVM;
 	friend class Compiler;
 	friend class Disassembler;
 public:
