@@ -10,6 +10,7 @@
 #include <sstream> 
 #include <vector>
 #include <unordered_map>
+#include <list>
 
 #include "ast.h"
 #include "opcode.h"
@@ -17,6 +18,31 @@
 
 using namespace OP;
 using namespace std;
+
+typedef unordered_map<unsigned long long, unsigned short> Backmap;
+typedef list<OpData*> DList;
+
+#define PUSH_STATIC_FRAME() \
+	v->push_back(new OpData(PUSH_FRAME)); \
+	if (frame != NULL) \
+	++frame->frameCount; \
+	Add(1)
+
+#define POP_STATIC_FRAME() \
+	v->push_back(new OpData(POP_FRAME)); \
+	Add(1); \
+	if (frame != NULL) \
+		--frame->frameCount
+
+struct Frame
+{
+	Frame(){ startPos = 0; parent = NULL; frameCount = 0; }
+
+	Frame*  parent;
+	DList endHooks;
+	int frameCount;
+	unsigned int startPos;
+};
 
 class Compiler
 {
@@ -37,6 +63,8 @@ private:
 
 	void CompileBlock(Block* b, vector<OpData*>* v);
 	void CompileStatement(Statement* st, vector<OpData*>* v);
+	void PushFrame();
+	void PopFrame();
 
 	FILE* input;
 	CuCFile* output;
@@ -45,14 +73,18 @@ private:
 
 	Block* ast;
 
-	unordered_map<unsigned long long, unsigned short> forward_map;
+	Frame* frame;
+
+	Backmap forward_map;
 
 	void Add(unsigned short s)
 	{
-		for (unordered_map<unsigned long long, unsigned short>::iterator iter = forward_map.begin(); iter != forward_map.end(); ++iter)
+		for (Backmap::iterator iter = forward_map.begin(); iter != forward_map.end(); ++iter)
 		{
 			iter->second += s;
 		}
+		if (frame != NULL)
+			frame->startPos += 1;
 	}
 };
 

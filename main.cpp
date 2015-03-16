@@ -1,6 +1,7 @@
 #include "Compiler.h"
 #include "Interpret.h"
 #include "CuCFile.h"
+#include "Disassembler.h"
 
 #include <fstream>
 #include <string>
@@ -42,7 +43,8 @@ void disassemble(char* from, char* to)
 
 	if (file != NULL)
 	{
-
+		Disassembler d;
+		d.Dissassemble(out, file);
 	}
 	
 	out.close();

@@ -7,11 +7,13 @@
 
 class VM;
 class Compiler;
+class Disassembler;
 
 class CuCFile
 {
 	friend class VM;
 	friend class Compiler;
+	friend class Disassembler;
 public:
 	CuCFile();
 	virtual ~CuCFile();

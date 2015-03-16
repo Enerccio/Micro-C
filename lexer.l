@@ -62,6 +62,7 @@ true					{ yylval.c = 1; return NUMBER; }
 ")"						return RIGHT_BRACE;
 ","						return COMMA;
 
+"%"						return MOD;
 "++"					return INC;
 "--"					return DEC;
 "+"						return PLUS;
@@ -171,6 +172,11 @@ scan					return SCAN;
 										  *string_buf_ptr++ = *yptr++;
 								  }
 [a-zA-Z_][a-zA-Z0-9_]*  SAVE_TOKEN; return IDENTIFIER; 
-.                       printf("Unknown token! <"); printf(yytext); printf(">\n"); yyterminate();
+.                       {
+							printf("Unknown token! <"); 
+							printf(yytext); 
+							printf(">\n"); 
+							yyterminate();
+						}
 
 %%

@@ -118,7 +118,7 @@ public:
 
 	Statement* exec;
 
-	ForStatement(Expression* i, Expression* c, Expression* t, Statement* e) :
+	ForStatement(Expression* i, Expression* t, Expression* c, Statement* e) :
 		init(i), cycle(c), test(t), exec(e) {}
 	virtual ~ForStatement(){ delete init; delete cycle; delete test; delete exec; }
 	virtual NodeType GetType(){ return FOR_STATEMENT; }
@@ -194,7 +194,7 @@ public:
 	virtual NodeType GetType(){ return SCAN_STATEMENT; }
 };
 
-class EmptyStatement : public Statement
+class EmptyStatement : public Expression
 {
 public:
 	virtual NodeType GetType(){ return EMPTY_STATEMENT; }

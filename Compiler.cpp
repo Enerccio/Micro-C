@@ -15,12 +15,14 @@ void writeByte(char b, char* pnt)
 
 void writeShort(short s, char* pnt)
 {
-	*pnt = ((char*)&s)[0];
-	*(pnt + 1) = ((char*)&s)[1];
+	char* t = (char*)&s;
+	pnt[0] = t[0];
+	pnt[1] = t[1];
 }
 
 Compiler::Compiler()
 {
+	frame = NULL;
 }
 
 
@@ -173,7 +175,7 @@ bool Compiler::Compile()
 		case PRINT_FRM:
 		case STORE_VAR:
 		case SCAN:
-			outputLen += 2;
+			outputLen += 3;
 		}
 	}
 
@@ -219,7 +221,8 @@ bool Compiler::Compile()
 			data->entry = bytecode;
 			data->pos = ppos++;
 			writeByte(data->code, bytecode++);
-			writeShort(data->sarg, bytecode++);
+			writeShort(data->sarg, bytecode);
+			bytecode += 2;
 			break;
 		case PUSH_VAR:
 		case PUSH_CONST:
@@ -230,13 +233,19 @@ bool Compiler::Compile()
 			data->entry = bytecode;
 			data->pos = ppos++;
 			writeByte(data->code, bytecode++);
-			writeShort(data->arg, bytecode++);
+			writeShort(data->arg, bytecode);
+			bytecode += 2;
 			break;
 		}
 	}
 
 	output->code = (unsigned char*)entry;
 	output->code_len = outputLen;
+
+	for (unsigned int i = 0; i < v.size(); i++)
+	{
+		delete v[i];
+	}
 
 	delete ast;
 	return true;
@@ -249,15 +258,13 @@ void Compiler::Optimize()
 
 void Compiler::CompileBlock(Block* block, vector<OpData*>* v)
 {
-	v->push_back(new OpData(PUSH_FRAME));
-	Add(1);
+	PUSH_STATIC_FRAME();
 	StatementList::iterator it;
 	for (it = block->statements.begin(); it != block->statements.end(); it++)
 	{
 		CompileStatement(*it, v);
 	}
-	Add(1);
-	v->push_back(new OpData(POP_FRAME));
+	POP_STATIC_FRAME();
 }
 
 void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
@@ -466,6 +473,12 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 							 Add(1);
 						 }
 	} break;
+	case SCAN_STATEMENT:
+	{
+						   ScanStatement* s = (ScanStatement*)st;
+						   v->push_back(new OpData(SCAN, output->AddLiterar(s->ident->ident)));
+						   Add(1);
+	} break;
 	case PRINT_EXPR_STATEMENT:
 	{
 								 PrintExpressionStatement* ps = (PrintExpressionStatement*)st;
@@ -486,5 +499,66 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 								   v->push_back(new OpData(PRINT_LIT, output->AddString(ps->format)));
 								   Add(3);
 	} break;
+	case CONTINUE_STATEMENT:
+	{
+							   for (int i = 0; i < frame->frameCount; i++)
+							   {
+								   v->push_back(new OpData(POP_FRAME));
+								   Add(1);
+							   }
+
+							   v->push_back(new OpData(JMP, ((signed short)-((signed short)frame->startPos))));
+							   Add(3);
+	} break;
+	case FOR_STATEMENT:
+	{
+						  PUSH_STATIC_FRAME();
+
+						  ForStatement* fs = (ForStatement*)st;
+						  CompileStatement(fs->init, v);
+						  PushFrame();
+						  frame->startPos = 0;
+
+						  CompileStatement(fs->test, v);
+						  OpData* jmpToEnd = new OpData(JZERO);
+						  v->push_back(jmpToEnd);
+						  Add(3);
+						  forward_map.insert(make_pair(jmpToEnd->cnt, (unsigned short)0));
+
+						  CompileStatement(fs->exec, v);
+						  CompileStatement(fs->cycle, v);
+						  
+						  jmpToEnd->sarg = (signed short)forward_map[jmpToEnd->cnt];
+						  forward_map.erase(jmpToEnd->cnt);
+
+						  for (DList::iterator it = frame->endHooks.begin(); it != frame->endHooks.end(); it++)
+						  {
+							  OpData* hook = *it;
+							  hook->sarg = (signed short)forward_map[hook->cnt];
+							  forward_map.erase(hook->cnt);
+						  }
+
+						  PopFrame();
+						  Add(1);
+						  v->push_back(new OpData());
+						  POP_STATIC_FRAME();
+	}
+	}
+}
+
+void Compiler::PushFrame()
+{
+	Frame* f = new Frame;
+	f->parent = frame;
+	frame = f;
+}
+
+void Compiler::PopFrame()
+{
+	if (frame != NULL)
+	{
+		Frame* f = frame;
+		frame = f->parent;
+		delete f;
 	}
 }
