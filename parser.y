@@ -58,9 +58,20 @@
 
 /* Priority */
 
-%left PLUS MINUS MUL DIV SHIFTL SHIFTR BAND BOR OR AND BXOR LNEG BNEG MOD
+%left SET_ADD SET SET_MUL SET_DIV SET_MOD SET_SUB SET_SHIFT_L SET_SHIFT_R SET_AND SET_XOR SET_OR
+%left OR
+%left AND
+%left BOR
+%left BXOR
+%left BAND
+%left EQ NEQ 
+%left LESS MORE LESS_EQ MORE_EQ
+%left SHIFTL SHIFTR
+%left PLUS MINUS 
+%left MUL DIV MOD 
+%left LNEG BNEG
+%left INC DEC
 %right ELSE "then" 
-%nonassoc EQ NEQ LESS MORE LESS_EQ MORE_EQ
 
 %start program
 

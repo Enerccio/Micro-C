@@ -730,12 +730,9 @@ State 36
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
+    MUL  shift, and go to state 54
+    DIV  shift, and go to state 55
+    MOD  shift, and go to state 66
 
     $default  reduce using rule 45 (expression)
 
@@ -774,12 +771,9 @@ State 38
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
+    MUL  shift, and go to state 54
+    DIV  shift, and go to state 55
+    MOD  shift, and go to state 66
 
     $default  reduce using rule 46 (expression)
 
@@ -806,13 +800,6 @@ State 39
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
-
     $default  reduce using rule 47 (expression)
 
 
@@ -837,13 +824,6 @@ State 40
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
-
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
 
     $default  reduce using rule 48 (expression)
 
@@ -1971,12 +1951,9 @@ State 106
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
+    MUL  shift, and go to state 54
+    DIV  shift, and go to state 55
+    MOD  shift, and go to state 66
 
     $default  reduce using rule 49 (expression)
 
@@ -2003,12 +1980,9 @@ State 107
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
+    MUL  shift, and go to state 54
+    DIV  shift, and go to state 55
+    MOD  shift, and go to state 66
 
     $default  reduce using rule 50 (expression)
 
@@ -2035,13 +2009,6 @@ State 108
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
-
     $default  reduce using rule 51 (expression)
 
 
@@ -2066,13 +2033,6 @@ State 109
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
-
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
 
     $default  reduce using rule 52 (expression)
 
@@ -2099,12 +2059,11 @@ State 110
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
+    PLUS   shift, and go to state 52
+    MINUS  shift, and go to state 53
+    MUL    shift, and go to state 54
+    DIV    shift, and go to state 55
+    MOD    shift, and go to state 66
 
     $default  reduce using rule 53 (expression)
 
@@ -2131,12 +2090,11 @@ State 111
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
+    PLUS   shift, and go to state 52
+    MINUS  shift, and go to state 53
+    MUL    shift, and go to state 54
+    DIV    shift, and go to state 55
+    MOD    shift, and go to state 66
 
     $default  reduce using rule 54 (expression)
 
@@ -2163,12 +2121,13 @@ State 112
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     error (nonassociative)
-    MORE     error (nonassociative)
-    LESS_EQ  error (nonassociative)
-    MORE_EQ  error (nonassociative)
-    EQ       error (nonassociative)
-    NEQ      error (nonassociative)
+    PLUS    shift, and go to state 52
+    MINUS   shift, and go to state 53
+    MUL     shift, and go to state 54
+    DIV     shift, and go to state 55
+    SHIFTL  shift, and go to state 56
+    SHIFTR  shift, and go to state 57
+    MOD     shift, and go to state 66
 
     $default  reduce using rule 55 (expression)
 
@@ -2195,12 +2154,13 @@ State 113
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     error (nonassociative)
-    MORE     error (nonassociative)
-    LESS_EQ  error (nonassociative)
-    MORE_EQ  error (nonassociative)
-    EQ       error (nonassociative)
-    NEQ      error (nonassociative)
+    PLUS    shift, and go to state 52
+    MINUS   shift, and go to state 53
+    MUL     shift, and go to state 54
+    DIV     shift, and go to state 55
+    SHIFTL  shift, and go to state 56
+    SHIFTR  shift, and go to state 57
+    MOD     shift, and go to state 66
 
     $default  reduce using rule 56 (expression)
 
@@ -2227,12 +2187,13 @@ State 114
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     error (nonassociative)
-    MORE     error (nonassociative)
-    LESS_EQ  error (nonassociative)
-    MORE_EQ  error (nonassociative)
-    EQ       error (nonassociative)
-    NEQ      error (nonassociative)
+    PLUS    shift, and go to state 52
+    MINUS   shift, and go to state 53
+    MUL     shift, and go to state 54
+    DIV     shift, and go to state 55
+    SHIFTL  shift, and go to state 56
+    SHIFTR  shift, and go to state 57
+    MOD     shift, and go to state 66
 
     $default  reduce using rule 57 (expression)
 
@@ -2259,12 +2220,13 @@ State 115
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     error (nonassociative)
-    MORE     error (nonassociative)
-    LESS_EQ  error (nonassociative)
-    MORE_EQ  error (nonassociative)
-    EQ       error (nonassociative)
-    NEQ      error (nonassociative)
+    PLUS    shift, and go to state 52
+    MINUS   shift, and go to state 53
+    MUL     shift, and go to state 54
+    DIV     shift, and go to state 55
+    SHIFTL  shift, and go to state 56
+    SHIFTR  shift, and go to state 57
+    MOD     shift, and go to state 66
 
     $default  reduce using rule 58 (expression)
 
@@ -2291,10 +2253,17 @@ State 116
    65           | expression . AND expression
    66           | expression . MOD expression
 
+    PLUS     shift, and go to state 52
+    MINUS    shift, and go to state 53
+    MUL      shift, and go to state 54
+    DIV      shift, and go to state 55
+    SHIFTL   shift, and go to state 56
+    SHIFTR   shift, and go to state 57
     LESS     shift, and go to state 58
     MORE     shift, and go to state 59
     LESS_EQ  shift, and go to state 60
     MORE_EQ  shift, and go to state 61
+    MOD      shift, and go to state 66
     EQ       shift, and go to state 68
     NEQ      shift, and go to state 69
 
@@ -2323,10 +2292,19 @@ State 117
    65           | expression . AND expression
    66           | expression . MOD expression
 
+    PLUS     shift, and go to state 52
+    MINUS    shift, and go to state 53
+    MUL      shift, and go to state 54
+    DIV      shift, and go to state 55
+    SHIFTL   shift, and go to state 56
+    SHIFTR   shift, and go to state 57
     LESS     shift, and go to state 58
     MORE     shift, and go to state 59
     LESS_EQ  shift, and go to state 60
     MORE_EQ  shift, and go to state 61
+    BAND     shift, and go to state 62
+    MOD      shift, and go to state 66
+    BXOR     shift, and go to state 67
     EQ       shift, and go to state 68
     NEQ      shift, and go to state 69
 
@@ -2355,10 +2333,21 @@ State 118
    65           | expression . AND expression
    66           | expression . MOD expression
 
+    PLUS     shift, and go to state 52
+    MINUS    shift, and go to state 53
+    MUL      shift, and go to state 54
+    DIV      shift, and go to state 55
+    SHIFTL   shift, and go to state 56
+    SHIFTR   shift, and go to state 57
     LESS     shift, and go to state 58
     MORE     shift, and go to state 59
     LESS_EQ  shift, and go to state 60
     MORE_EQ  shift, and go to state 61
+    BAND     shift, and go to state 62
+    BOR      shift, and go to state 63
+    AND      shift, and go to state 65
+    MOD      shift, and go to state 66
+    BXOR     shift, and go to state 67
     EQ       shift, and go to state 68
     NEQ      shift, and go to state 69
 
@@ -2387,10 +2376,20 @@ State 119
    65           | expression AND expression .
    66           | expression . MOD expression
 
+    PLUS     shift, and go to state 52
+    MINUS    shift, and go to state 53
+    MUL      shift, and go to state 54
+    DIV      shift, and go to state 55
+    SHIFTL   shift, and go to state 56
+    SHIFTR   shift, and go to state 57
     LESS     shift, and go to state 58
     MORE     shift, and go to state 59
     LESS_EQ  shift, and go to state 60
     MORE_EQ  shift, and go to state 61
+    BAND     shift, and go to state 62
+    BOR      shift, and go to state 63
+    MOD      shift, and go to state 66
+    BXOR     shift, and go to state 67
     EQ       shift, and go to state 68
     NEQ      shift, and go to state 69
 
@@ -2419,13 +2418,6 @@ State 120
    66           | expression . MOD expression
    66           | expression MOD expression .
 
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
-
     $default  reduce using rule 66 (expression)
 
 
@@ -2451,10 +2443,18 @@ State 121
    65           | expression . AND expression
    66           | expression . MOD expression
 
+    PLUS     shift, and go to state 52
+    MINUS    shift, and go to state 53
+    MUL      shift, and go to state 54
+    DIV      shift, and go to state 55
+    SHIFTL   shift, and go to state 56
+    SHIFTR   shift, and go to state 57
     LESS     shift, and go to state 58
     MORE     shift, and go to state 59
     LESS_EQ  shift, and go to state 60
     MORE_EQ  shift, and go to state 61
+    BAND     shift, and go to state 62
+    MOD      shift, and go to state 66
     EQ       shift, and go to state 68
     NEQ      shift, and go to state 69
 
@@ -2483,12 +2483,17 @@ State 122
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     error (nonassociative)
-    MORE     error (nonassociative)
-    LESS_EQ  error (nonassociative)
-    MORE_EQ  error (nonassociative)
-    EQ       error (nonassociative)
-    NEQ      error (nonassociative)
+    PLUS     shift, and go to state 52
+    MINUS    shift, and go to state 53
+    MUL      shift, and go to state 54
+    DIV      shift, and go to state 55
+    SHIFTL   shift, and go to state 56
+    SHIFTR   shift, and go to state 57
+    LESS     shift, and go to state 58
+    MORE     shift, and go to state 59
+    LESS_EQ  shift, and go to state 60
+    MORE_EQ  shift, and go to state 61
+    MOD      shift, and go to state 66
 
     $default  reduce using rule 62 (expression)
 
@@ -2515,12 +2520,17 @@ State 123
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    LESS     error (nonassociative)
-    MORE     error (nonassociative)
-    LESS_EQ  error (nonassociative)
-    MORE_EQ  error (nonassociative)
-    EQ       error (nonassociative)
-    NEQ      error (nonassociative)
+    PLUS     shift, and go to state 52
+    MINUS    shift, and go to state 53
+    MUL      shift, and go to state 54
+    DIV      shift, and go to state 55
+    SHIFTL   shift, and go to state 56
+    SHIFTR   shift, and go to state 57
+    LESS     shift, and go to state 58
+    MORE     shift, and go to state 59
+    LESS_EQ  shift, and go to state 60
+    MORE_EQ  shift, and go to state 61
+    MOD      shift, and go to state 66
 
     $default  reduce using rule 63 (expression)
 
