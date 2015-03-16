@@ -49,7 +49,7 @@ void Disassembler::Dissassemble(ofstream& out, CuCFile* code)
 			sprintf(buffer, format_single, codePtr - 1, "PUSH_FRAME", (int)o, "PUSH FRAME onto stack");
 			break;
 		case POP_FRAME:
-			sprintf(buffer, format_single, codePtr - 1, "POP_FRAME", (int)o, "POP FRAME onto stack");
+			sprintf(buffer, format_single, codePtr - 1, "POP_FRAME", (int)o, "POP FRAME from stack");
 			break;
 		case POP:
 			sprintf(buffer, format_single, codePtr - 1, "POP\t", (int)o, "POP value off stack");
@@ -115,19 +115,31 @@ void Disassembler::Dissassemble(ofstream& out, CuCFile* code)
 			sprintf(buffer, format_single, codePtr - 1, "PRINT\t", (int)o, "PRINTs top of the stack");
 			break;
 		case JMP:
-			addr = readShort(code->code + codePtr) + codePtr + 2;
+			addr = readShort(code->code + codePtr);
+			if (addr >= 0)
+				addr += codePtr + 2;
+			else
+				addr += codePtr - 1;
 			sprintf(buf2, "JMP to <%i>", addr);
 			sprintf(buffer, format_tripple, codePtr - 1, "JMP\t", (int)o, (code->code + codePtr)[0], (code->code + codePtr + 1)[0], buf2);
 			codePtr += 2;
 			break;
 		case JZERO:
-			addr = readShort(code->code + codePtr) + codePtr + 2;
+			addr = readShort(code->code + codePtr);
+			if (addr >= 0)
+				addr += codePtr + 2;
+			else
+				addr += codePtr - 1;
 			sprintf(buf2, "JUMP on ZERO on stack to <%i>", addr);
 			sprintf(buffer, format_tripple, codePtr - 1, "JZERO\t", (int)o, (code->code + codePtr)[0], (code->code + codePtr + 1)[0], buf2);
 			codePtr += 2;
 			break;
 		case JNZERO:
-			addr = readShort(code->code + codePtr) + codePtr + 2;
+			addr = readShort(code->code + codePtr);
+			if (addr >= 0)
+				addr += codePtr + 2;
+			else
+				addr += codePtr - 1;
 			sprintf(buf2, "JUMP on not ZERO on stack to <%i>", addr);
 			sprintf(buffer, format_tripple, codePtr - 1, "JNZERO", (int)o, (code->code + codePtr)[0], (code->code + codePtr + 1)[0], buf2);
 			codePtr += 2;

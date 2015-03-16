@@ -84,7 +84,7 @@ private:
 			iter->second += s;
 		}
 		if (frame != NULL)
-			frame->startPos += 1;
+			frame->startPos += s;
 	}
 };
 

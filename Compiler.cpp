@@ -419,6 +419,7 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 										case O_MINUS: v->push_back(new OpData(SUB)); break;
 										case O_MUL: v->push_back(new OpData(MUL)); break;
 										case O_DIV: v->push_back(new OpData(DIV)); break;
+										case O_MOD: v->push_back(new OpData(MOD)); break;
 										case O_SHIFT_LEFT: v->push_back(new OpData(LSHIFT)); break;
 										case O_SHIFT_RIGHT: v->push_back(new OpData(RSHIFT)); break;
 										case O_EQUALS: v->push_back(new OpData(EQ)); break;
@@ -527,6 +528,9 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 
 						  CompileStatement(fs->exec, v);
 						  CompileStatement(fs->cycle, v);
+
+						  v->push_back(new OpData(JMP, (signed short)-(signed int)frame->startPos));
+						  Add(3);
 						  
 						  jmpToEnd->sarg = (signed short)forward_map[jmpToEnd->cnt];
 						  forward_map.erase(jmpToEnd->cnt);
@@ -539,8 +543,8 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 						  }
 
 						  PopFrame();
-						  Add(1);
 						  v->push_back(new OpData());
+						  Add(1);
 						  POP_STATIC_FRAME();
 	}
 	}
