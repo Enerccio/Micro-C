@@ -141,7 +141,7 @@ void Disassembler::Dissassemble(ofstream& out, CuCFile* code)
 			else
 				addr += codePtr - 1;
 			sprintf(buf2, "JUMP on not ZERO on stack to <%i>", addr);
-			sprintf(buffer, format_tripple, codePtr - 1, "JNZERO", (int)o, (code->code + codePtr)[0], (code->code + codePtr + 1)[0], buf2);
+			sprintf(buffer, format_tripple, codePtr - 1, "JNZERO\t", (int)o, (code->code + codePtr)[0], (code->code + codePtr + 1)[0], buf2);
 			codePtr += 2;
 			break;
 			break;

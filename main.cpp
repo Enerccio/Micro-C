@@ -2,6 +2,7 @@
 #include "Interpret.h"
 #include "CuCFile.h"
 #include "Disassembler.h"
+#include "MicroCVM.h"
 
 #include <fstream>
 #include <string>
@@ -50,6 +51,24 @@ void disassemble(char* from, char* to)
 	out.close();
 }
 
+void run(char* source)
+{
+	std::ifstream in;
+	in.open((const char*)source, std::ios::binary);
+	CuCFile* file = CuCFile::parse(&in);
+	in.close();
+
+	if (file != NULL)
+	{
+		MicroCVM vm;
+		vm.Load(file);
+		while (vm.HasNext())
+			vm.Iterate();
+	}
+
+	delete file;
+}
+
 
 int main(int argc, char** argv)
 {
@@ -59,8 +78,8 @@ int main(int argc, char** argv)
 	if (argc > 3){
 		if (strcmp(argv[1], "-c") == 0)
 			compile(argv[2], argv[3]);
-		//else if (strcmp(argv[1], "-d") == 0)
-		//	disassemble(argv[2], argv[3]);
+		else if (strcmp(argv[1], "-d") == 0)
+			disassemble(argv[2], argv[3]);
 	}
 
 	// debug
@@ -68,7 +87,8 @@ int main(int argc, char** argv)
 	{
 		compile(argv[1], "tmp");
 		disassemble("tmp", argv[2]);
-		// run("tmp");
+		printf("\n\n");
+		run("tmp");
 	}
 
 	return 0;

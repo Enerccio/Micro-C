@@ -27,7 +27,7 @@ Grammar
    20     | IF LEFT_BRACE expression RIGHT_BRACE stmt
    21     | IF LEFT_BRACE expression RIGHT_BRACE stmt ELSE stmt
    22     | FOR LEFT_BRACE for_first EOS for_second EOS for_third RIGHT_BRACE stmt
-   23     | DO expression WHILE stmt
+   23     | DO stmt WHILE expression EOS
    24     | WHILE LEFT_BRACE expression RIGHT_BRACE stmt
    25     | CONT EOS
    26     | BREAK EOS
@@ -40,7 +40,7 @@ Grammar
 
    32 empty_expr: EOS
 
-   33 for_first: empty_expr
+   33 for_first: /* empty */
    34          | set_expr
 
    35 for_second: /* empty */
@@ -148,7 +148,8 @@ CONT (303) 25
 BREAK (304) 26
 PRINT (305) 27 28 29
 SCAN (306) 30
-EOS (307) 7 8 9 10 11 12 13 14 15 16 17 18 22 25 26 27 28 29 30 32
+EOS (307) 7 8 9 10 11 12 13 14 15 16 17 18 22 23 25 26 27 28 29 30
+    32
 COMMA (308) 29
 "then" (309)
 
@@ -169,7 +170,7 @@ stmt (59)
 set_expr (60)
     on left: 31, on right: 8 34 67
 empty_expr (61)
-    on left: 32, on right: 19 33
+    on left: 32, on right: 19
 for_first (62)
     on left: 33 34, on right: 22
 for_second (63)
@@ -404,20 +405,34 @@ State 15
 
 State 16
 
-   23 stmt: DO . expression WHILE stmt
+   23 stmt: DO . stmt WHILE expression EOS
 
-    IDENTIFIER  shift, and go to state 4
-    NUMBER      shift, and go to state 5
-    LEFT_BRACE  shift, and go to state 7
-    INC         shift, and go to state 8
-    DEC         shift, and go to state 9
-    PLUS        shift, and go to state 10
-    MINUS       shift, and go to state 11
-    LNEG        shift, and go to state 12
-    BNEG        shift, and go to state 13
+    IDENTIFIER        shift, and go to state 4
+    NUMBER            shift, and go to state 5
+    LEFT_CURLY_BRACE  shift, and go to state 1
+    LEFT_BRACE        shift, and go to state 7
+    INC               shift, and go to state 8
+    DEC               shift, and go to state 9
+    PLUS              shift, and go to state 10
+    MINUS             shift, and go to state 11
+    LNEG              shift, and go to state 12
+    BNEG              shift, and go to state 13
+    IF                shift, and go to state 14
+    FOR               shift, and go to state 15
+    DO                shift, and go to state 16
+    WHILE             shift, and go to state 17
+    CONT              shift, and go to state 18
+    BREAK             shift, and go to state 19
+    PRINT             shift, and go to state 20
+    SCAN              shift, and go to state 21
+    EOS               shift, and go to state 22
 
-    expression  go to state 43
-    identifier  go to state 37
+    block       go to state 23
+    stmt        go to state 43
+    set_expr    go to state 26
+    empty_expr  go to state 27
+    expression  go to state 28
+    identifier  go to state 29
 
 
 State 17
@@ -852,55 +867,19 @@ State 42
    22 stmt: FOR LEFT_BRACE . for_first EOS for_second EOS for_third RIGHT_BRACE stmt
 
     IDENTIFIER  shift, and go to state 4
-    EOS         shift, and go to state 22
+
+    $default  reduce using rule 33 (for_first)
 
     set_expr    go to state 97
-    empty_expr  go to state 98
-    for_first   go to state 99
-    identifier  go to state 100
+    for_first   go to state 98
+    identifier  go to state 99
 
 
 State 43
 
-   23 stmt: DO expression . WHILE stmt
-   49 expression: expression . PLUS expression
-   50           | expression . MINUS expression
-   51           | expression . MUL expression
-   52           | expression . DIV expression
-   53           | expression . SHIFTL expression
-   54           | expression . SHIFTR expression
-   55           | expression . LESS expression
-   56           | expression . MORE expression
-   57           | expression . LESS_EQ expression
-   58           | expression . MORE_EQ expression
-   59           | expression . BAND expression
-   60           | expression . BOR expression
-   61           | expression . BXOR expression
-   62           | expression . EQ expression
-   63           | expression . NEQ expression
-   64           | expression . OR expression
-   65           | expression . AND expression
-   66           | expression . MOD expression
+   23 stmt: DO stmt . WHILE expression EOS
 
-    PLUS     shift, and go to state 52
-    MINUS    shift, and go to state 53
-    MUL      shift, and go to state 54
-    DIV      shift, and go to state 55
-    SHIFTL   shift, and go to state 56
-    SHIFTR   shift, and go to state 57
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    BAND     shift, and go to state 62
-    BOR      shift, and go to state 63
-    OR       shift, and go to state 64
-    AND      shift, and go to state 65
-    MOD      shift, and go to state 66
-    BXOR     shift, and go to state 67
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
-    WHILE    shift, and go to state 101
+    WHILE  shift, and go to state 100
 
 
 State 44
@@ -917,7 +896,7 @@ State 44
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 102
+    expression  go to state 101
     identifier  go to state 37
 
 
@@ -941,7 +920,7 @@ State 47
    28     | PRINT LEFT_BRACE . STRINGLIT RIGHT_BRACE EOS
    29     | PRINT LEFT_BRACE . STRINGLIT COMMA expression RIGHT_BRACE EOS
 
-    STRINGLIT   shift, and go to state 103
+    STRINGLIT   shift, and go to state 102
     IDENTIFIER  shift, and go to state 4
     NUMBER      shift, and go to state 5
     LEFT_BRACE  shift, and go to state 7
@@ -952,7 +931,7 @@ State 47
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 104
+    expression  go to state 103
     identifier  go to state 37
 
 
@@ -962,7 +941,7 @@ State 48
 
     IDENTIFIER  shift, and go to state 4
 
-    identifier  go to state 105
+    identifier  go to state 104
 
 
 State 49
@@ -1000,7 +979,7 @@ State 52
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 106
+    expression  go to state 105
     identifier  go to state 37
 
 
@@ -1018,7 +997,7 @@ State 53
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 107
+    expression  go to state 106
     identifier  go to state 37
 
 
@@ -1036,7 +1015,7 @@ State 54
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 108
+    expression  go to state 107
     identifier  go to state 37
 
 
@@ -1054,7 +1033,7 @@ State 55
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 109
+    expression  go to state 108
     identifier  go to state 37
 
 
@@ -1072,7 +1051,7 @@ State 56
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 110
+    expression  go to state 109
     identifier  go to state 37
 
 
@@ -1090,7 +1069,7 @@ State 57
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 111
+    expression  go to state 110
     identifier  go to state 37
 
 
@@ -1108,7 +1087,7 @@ State 58
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 112
+    expression  go to state 111
     identifier  go to state 37
 
 
@@ -1126,7 +1105,7 @@ State 59
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 113
+    expression  go to state 112
     identifier  go to state 37
 
 
@@ -1144,7 +1123,7 @@ State 60
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 114
+    expression  go to state 113
     identifier  go to state 37
 
 
@@ -1162,7 +1141,7 @@ State 61
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 115
+    expression  go to state 114
     identifier  go to state 37
 
 
@@ -1180,7 +1159,7 @@ State 62
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 116
+    expression  go to state 115
     identifier  go to state 37
 
 
@@ -1198,7 +1177,7 @@ State 63
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 117
+    expression  go to state 116
     identifier  go to state 37
 
 
@@ -1216,7 +1195,7 @@ State 64
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 118
+    expression  go to state 117
     identifier  go to state 37
 
 
@@ -1234,7 +1213,7 @@ State 65
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 119
+    expression  go to state 118
     identifier  go to state 37
 
 
@@ -1252,7 +1231,7 @@ State 66
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 120
+    expression  go to state 119
     identifier  go to state 37
 
 
@@ -1270,7 +1249,7 @@ State 67
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 121
+    expression  go to state 120
     identifier  go to state 37
 
 
@@ -1288,7 +1267,7 @@ State 68
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 122
+    expression  go to state 121
     identifier  go to state 37
 
 
@@ -1306,7 +1285,7 @@ State 69
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 123
+    expression  go to state 122
     identifier  go to state 37
 
 
@@ -1345,7 +1324,7 @@ State 73
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 124
+    expression  go to state 123
     identifier  go to state 37
 
 
@@ -1363,7 +1342,7 @@ State 74
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 125
+    expression  go to state 124
     identifier  go to state 37
 
 
@@ -1381,7 +1360,7 @@ State 75
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 126
+    expression  go to state 125
     identifier  go to state 37
 
 
@@ -1399,7 +1378,7 @@ State 76
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 127
+    expression  go to state 126
     identifier  go to state 37
 
 
@@ -1417,7 +1396,7 @@ State 77
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 128
+    expression  go to state 127
     identifier  go to state 37
 
 
@@ -1435,7 +1414,7 @@ State 78
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 129
+    expression  go to state 128
     identifier  go to state 37
 
 
@@ -1453,7 +1432,7 @@ State 79
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 130
+    expression  go to state 129
     identifier  go to state 37
 
 
@@ -1471,7 +1450,7 @@ State 80
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 131
+    expression  go to state 130
     identifier  go to state 37
 
 
@@ -1489,7 +1468,7 @@ State 81
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 132
+    expression  go to state 131
     identifier  go to state 37
 
 
@@ -1507,7 +1486,7 @@ State 82
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 133
+    expression  go to state 132
     identifier  go to state 37
 
 
@@ -1525,7 +1504,7 @@ State 83
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 134
+    expression  go to state 133
     identifier  go to state 37
 
 
@@ -1557,7 +1536,7 @@ State 86
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 135
+    expression  go to state 134
     identifier  go to state 37
 
 
@@ -1575,7 +1554,7 @@ State 87
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 136
+    expression  go to state 135
     identifier  go to state 37
 
 
@@ -1593,7 +1572,7 @@ State 88
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 137
+    expression  go to state 136
     identifier  go to state 37
 
 
@@ -1611,7 +1590,7 @@ State 89
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 138
+    expression  go to state 137
     identifier  go to state 37
 
 
@@ -1629,7 +1608,7 @@ State 90
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 139
+    expression  go to state 138
     identifier  go to state 37
 
 
@@ -1647,7 +1626,7 @@ State 91
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 140
+    expression  go to state 139
     identifier  go to state 37
 
 
@@ -1665,7 +1644,7 @@ State 92
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 141
+    expression  go to state 140
     identifier  go to state 37
 
 
@@ -1683,7 +1662,7 @@ State 93
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 142
+    expression  go to state 141
     identifier  go to state 37
 
 
@@ -1701,7 +1680,7 @@ State 94
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 143
+    expression  go to state 142
     identifier  go to state 37
 
 
@@ -1719,7 +1698,7 @@ State 95
     LNEG        shift, and go to state 12
     BNEG        shift, and go to state 13
 
-    expression  go to state 144
+    expression  go to state 143
     identifier  go to state 37
 
 
@@ -1746,7 +1725,7 @@ State 96
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    RIGHT_BRACE  shift, and go to state 145
+    RIGHT_BRACE  shift, and go to state 144
     PLUS         shift, and go to state 52
     MINUS        shift, and go to state 53
     MUL          shift, and go to state 54
@@ -1776,58 +1755,37 @@ State 97
 
 State 98
 
-   33 for_first: empty_expr .
+   22 stmt: FOR LEFT_BRACE for_first . EOS for_second EOS for_third RIGHT_BRACE stmt
 
-    $default  reduce using rule 33 (for_first)
+    EOS  shift, and go to state 145
 
 
 State 99
-
-   22 stmt: FOR LEFT_BRACE for_first . EOS for_second EOS for_third RIGHT_BRACE stmt
-
-    EOS  shift, and go to state 146
-
-
-State 100
 
    31 set_expr: identifier . SET expression
 
     SET  shift, and go to state 74
 
 
+State 100
+
+   23 stmt: DO stmt WHILE . expression EOS
+
+    IDENTIFIER  shift, and go to state 4
+    NUMBER      shift, and go to state 5
+    LEFT_BRACE  shift, and go to state 7
+    INC         shift, and go to state 8
+    DEC         shift, and go to state 9
+    PLUS        shift, and go to state 10
+    MINUS       shift, and go to state 11
+    LNEG        shift, and go to state 12
+    BNEG        shift, and go to state 13
+
+    expression  go to state 146
+    identifier  go to state 37
+
+
 State 101
-
-   23 stmt: DO expression WHILE . stmt
-
-    IDENTIFIER        shift, and go to state 4
-    NUMBER            shift, and go to state 5
-    LEFT_CURLY_BRACE  shift, and go to state 1
-    LEFT_BRACE        shift, and go to state 7
-    INC               shift, and go to state 8
-    DEC               shift, and go to state 9
-    PLUS              shift, and go to state 10
-    MINUS             shift, and go to state 11
-    LNEG              shift, and go to state 12
-    BNEG              shift, and go to state 13
-    IF                shift, and go to state 14
-    FOR               shift, and go to state 15
-    DO                shift, and go to state 16
-    WHILE             shift, and go to state 17
-    CONT              shift, and go to state 18
-    BREAK             shift, and go to state 19
-    PRINT             shift, and go to state 20
-    SCAN              shift, and go to state 21
-    EOS               shift, and go to state 22
-
-    block       go to state 23
-    stmt        go to state 147
-    set_expr    go to state 26
-    empty_expr  go to state 27
-    expression  go to state 28
-    identifier  go to state 29
-
-
-State 102
 
    24 stmt: WHILE LEFT_BRACE expression . RIGHT_BRACE stmt
    49 expression: expression . PLUS expression
@@ -1849,7 +1807,7 @@ State 102
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    RIGHT_BRACE  shift, and go to state 148
+    RIGHT_BRACE  shift, and go to state 147
     PLUS         shift, and go to state 52
     MINUS        shift, and go to state 53
     MUL          shift, and go to state 54
@@ -1870,16 +1828,16 @@ State 102
     NEQ          shift, and go to state 69
 
 
-State 103
+State 102
 
    28 stmt: PRINT LEFT_BRACE STRINGLIT . RIGHT_BRACE EOS
    29     | PRINT LEFT_BRACE STRINGLIT . COMMA expression RIGHT_BRACE EOS
 
-    RIGHT_BRACE  shift, and go to state 149
-    COMMA        shift, and go to state 150
+    RIGHT_BRACE  shift, and go to state 148
+    COMMA        shift, and go to state 149
 
 
-State 104
+State 103
 
    27 stmt: PRINT LEFT_BRACE expression . RIGHT_BRACE EOS
    49 expression: expression . PLUS expression
@@ -1901,7 +1859,7 @@ State 104
    65           | expression . AND expression
    66           | expression . MOD expression
 
-    RIGHT_BRACE  shift, and go to state 151
+    RIGHT_BRACE  shift, and go to state 150
     PLUS         shift, and go to state 52
     MINUS        shift, and go to state 53
     MUL          shift, and go to state 54
@@ -1922,14 +1880,14 @@ State 104
     NEQ          shift, and go to state 69
 
 
-State 105
+State 104
 
    30 stmt: SCAN LEFT_BRACE identifier . RIGHT_BRACE EOS
 
-    RIGHT_BRACE  shift, and go to state 152
+    RIGHT_BRACE  shift, and go to state 151
 
 
-State 106
+State 105
 
    49 expression: expression . PLUS expression
    49           | expression PLUS expression .
@@ -1958,7 +1916,7 @@ State 106
     $default  reduce using rule 49 (expression)
 
 
-State 107
+State 106
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -1987,7 +1945,7 @@ State 107
     $default  reduce using rule 50 (expression)
 
 
-State 108
+State 107
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2012,7 +1970,7 @@ State 108
     $default  reduce using rule 51 (expression)
 
 
-State 109
+State 108
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2037,7 +1995,7 @@ State 109
     $default  reduce using rule 52 (expression)
 
 
-State 110
+State 109
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2068,7 +2026,7 @@ State 110
     $default  reduce using rule 53 (expression)
 
 
-State 111
+State 110
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2099,7 +2057,7 @@ State 111
     $default  reduce using rule 54 (expression)
 
 
-State 112
+State 111
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2132,7 +2090,7 @@ State 112
     $default  reduce using rule 55 (expression)
 
 
-State 113
+State 112
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2165,7 +2123,7 @@ State 113
     $default  reduce using rule 56 (expression)
 
 
-State 114
+State 113
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2198,7 +2156,7 @@ State 114
     $default  reduce using rule 57 (expression)
 
 
-State 115
+State 114
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2231,7 +2189,7 @@ State 115
     $default  reduce using rule 58 (expression)
 
 
-State 116
+State 115
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2270,7 +2228,7 @@ State 116
     $default  reduce using rule 59 (expression)
 
 
-State 117
+State 116
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2311,7 +2269,7 @@ State 117
     $default  reduce using rule 60 (expression)
 
 
-State 118
+State 117
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2354,7 +2312,7 @@ State 118
     $default  reduce using rule 64 (expression)
 
 
-State 119
+State 118
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2396,7 +2354,7 @@ State 119
     $default  reduce using rule 65 (expression)
 
 
-State 120
+State 119
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2421,7 +2379,7 @@ State 120
     $default  reduce using rule 66 (expression)
 
 
-State 121
+State 120
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2461,7 +2419,7 @@ State 121
     $default  reduce using rule 61 (expression)
 
 
-State 122
+State 121
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2498,7 +2456,7 @@ State 122
     $default  reduce using rule 62 (expression)
 
 
-State 123
+State 122
 
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
@@ -2535,7 +2493,7 @@ State 123
     $default  reduce using rule 63 (expression)
 
 
-State 124
+State 123
 
    12 stmt: identifier SET_ADD expression . EOS
    49 expression: expression . PLUS expression
@@ -2575,10 +2533,10 @@ State 124
     BXOR     shift, and go to state 67
     EQ       shift, and go to state 68
     NEQ      shift, and go to state 69
-    EOS      shift, and go to state 153
+    EOS      shift, and go to state 152
 
 
-State 125
+State 124
 
    31 set_expr: identifier SET expression .
    49 expression: expression . PLUS expression
@@ -2622,9 +2580,52 @@ State 125
     $default  reduce using rule 31 (set_expr)
 
 
-State 126
+State 125
 
     9 stmt: identifier SET_MUL expression . EOS
+   49 expression: expression . PLUS expression
+   50           | expression . MINUS expression
+   51           | expression . MUL expression
+   52           | expression . DIV expression
+   53           | expression . SHIFTL expression
+   54           | expression . SHIFTR expression
+   55           | expression . LESS expression
+   56           | expression . MORE expression
+   57           | expression . LESS_EQ expression
+   58           | expression . MORE_EQ expression
+   59           | expression . BAND expression
+   60           | expression . BOR expression
+   61           | expression . BXOR expression
+   62           | expression . EQ expression
+   63           | expression . NEQ expression
+   64           | expression . OR expression
+   65           | expression . AND expression
+   66           | expression . MOD expression
+
+    PLUS     shift, and go to state 52
+    MINUS    shift, and go to state 53
+    MUL      shift, and go to state 54
+    DIV      shift, and go to state 55
+    SHIFTL   shift, and go to state 56
+    SHIFTR   shift, and go to state 57
+    LESS     shift, and go to state 58
+    MORE     shift, and go to state 59
+    LESS_EQ  shift, and go to state 60
+    MORE_EQ  shift, and go to state 61
+    BAND     shift, and go to state 62
+    BOR      shift, and go to state 63
+    OR       shift, and go to state 64
+    AND      shift, and go to state 65
+    MOD      shift, and go to state 66
+    BXOR     shift, and go to state 67
+    EQ       shift, and go to state 68
+    NEQ      shift, and go to state 69
+    EOS      shift, and go to state 153
+
+
+State 126
+
+   10 stmt: identifier SET_DIV expression . EOS
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
    51           | expression . MUL expression
@@ -2667,7 +2668,7 @@ State 126
 
 State 127
 
-   10 stmt: identifier SET_DIV expression . EOS
+   11 stmt: identifier SET_MOD expression . EOS
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
    51           | expression . MUL expression
@@ -2710,7 +2711,7 @@ State 127
 
 State 128
 
-   11 stmt: identifier SET_MOD expression . EOS
+   13 stmt: identifier SET_SUB expression . EOS
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
    51           | expression . MUL expression
@@ -2753,7 +2754,7 @@ State 128
 
 State 129
 
-   13 stmt: identifier SET_SUB expression . EOS
+   14 stmt: identifier SET_SHIFT_L expression . EOS
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
    51           | expression . MUL expression
@@ -2796,7 +2797,7 @@ State 129
 
 State 130
 
-   14 stmt: identifier SET_SHIFT_L expression . EOS
+   15 stmt: identifier SET_SHIFT_R expression . EOS
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
    51           | expression . MUL expression
@@ -2839,7 +2840,7 @@ State 130
 
 State 131
 
-   15 stmt: identifier SET_SHIFT_R expression . EOS
+   16 stmt: identifier SET_AND expression . EOS
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
    51           | expression . MUL expression
@@ -2882,7 +2883,7 @@ State 131
 
 State 132
 
-   16 stmt: identifier SET_AND expression . EOS
+   17 stmt: identifier SET_XOR expression . EOS
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
    51           | expression . MUL expression
@@ -2925,7 +2926,7 @@ State 132
 
 State 133
 
-   17 stmt: identifier SET_XOR expression . EOS
+   18 stmt: identifier SET_OR expression . EOS
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
    51           | expression . MUL expression
@@ -2968,7 +2969,6 @@ State 133
 
 State 134
 
-   18 stmt: identifier SET_OR expression . EOS
    49 expression: expression . PLUS expression
    50           | expression . MINUS expression
    51           | expression . MUL expression
@@ -2987,26 +2987,27 @@ State 134
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
+   71           | LEFT_BRACE identifier SET_ADD expression . RIGHT_BRACE
 
-    PLUS     shift, and go to state 52
-    MINUS    shift, and go to state 53
-    MUL      shift, and go to state 54
-    DIV      shift, and go to state 55
-    SHIFTL   shift, and go to state 56
-    SHIFTR   shift, and go to state 57
-    LESS     shift, and go to state 58
-    MORE     shift, and go to state 59
-    LESS_EQ  shift, and go to state 60
-    MORE_EQ  shift, and go to state 61
-    BAND     shift, and go to state 62
-    BOR      shift, and go to state 63
-    OR       shift, and go to state 64
-    AND      shift, and go to state 65
-    MOD      shift, and go to state 66
-    BXOR     shift, and go to state 67
-    EQ       shift, and go to state 68
-    NEQ      shift, and go to state 69
-    EOS      shift, and go to state 162
+    RIGHT_BRACE  shift, and go to state 162
+    PLUS         shift, and go to state 52
+    MINUS        shift, and go to state 53
+    MUL          shift, and go to state 54
+    DIV          shift, and go to state 55
+    SHIFTL       shift, and go to state 56
+    SHIFTR       shift, and go to state 57
+    LESS         shift, and go to state 58
+    MORE         shift, and go to state 59
+    LESS_EQ      shift, and go to state 60
+    MORE_EQ      shift, and go to state 61
+    BAND         shift, and go to state 62
+    BOR          shift, and go to state 63
+    OR           shift, and go to state 64
+    AND          shift, and go to state 65
+    MOD          shift, and go to state 66
+    BXOR         shift, and go to state 67
+    EQ           shift, and go to state 68
+    NEQ          shift, and go to state 69
 
 
 State 135
@@ -3029,7 +3030,7 @@ State 135
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
-   71           | LEFT_BRACE identifier SET_ADD expression . RIGHT_BRACE
+   68           | LEFT_BRACE identifier SET_MUL expression . RIGHT_BRACE
 
     RIGHT_BRACE  shift, and go to state 163
     PLUS         shift, and go to state 52
@@ -3072,7 +3073,7 @@ State 136
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
-   68           | LEFT_BRACE identifier SET_MUL expression . RIGHT_BRACE
+   69           | LEFT_BRACE identifier SET_DIV expression . RIGHT_BRACE
 
     RIGHT_BRACE  shift, and go to state 164
     PLUS         shift, and go to state 52
@@ -3115,7 +3116,7 @@ State 137
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
-   69           | LEFT_BRACE identifier SET_DIV expression . RIGHT_BRACE
+   70           | LEFT_BRACE identifier SET_MOD expression . RIGHT_BRACE
 
     RIGHT_BRACE  shift, and go to state 165
     PLUS         shift, and go to state 52
@@ -3158,7 +3159,7 @@ State 138
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
-   70           | LEFT_BRACE identifier SET_MOD expression . RIGHT_BRACE
+   72           | LEFT_BRACE identifier SET_SUB expression . RIGHT_BRACE
 
     RIGHT_BRACE  shift, and go to state 166
     PLUS         shift, and go to state 52
@@ -3201,7 +3202,7 @@ State 139
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
-   72           | LEFT_BRACE identifier SET_SUB expression . RIGHT_BRACE
+   73           | LEFT_BRACE identifier SET_SHIFT_L expression . RIGHT_BRACE
 
     RIGHT_BRACE  shift, and go to state 167
     PLUS         shift, and go to state 52
@@ -3244,7 +3245,7 @@ State 140
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
-   73           | LEFT_BRACE identifier SET_SHIFT_L expression . RIGHT_BRACE
+   74           | LEFT_BRACE identifier SET_SHIFT_R expression . RIGHT_BRACE
 
     RIGHT_BRACE  shift, and go to state 168
     PLUS         shift, and go to state 52
@@ -3287,7 +3288,7 @@ State 141
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
-   74           | LEFT_BRACE identifier SET_SHIFT_R expression . RIGHT_BRACE
+   75           | LEFT_BRACE identifier SET_AND expression . RIGHT_BRACE
 
     RIGHT_BRACE  shift, and go to state 169
     PLUS         shift, and go to state 52
@@ -3330,7 +3331,7 @@ State 142
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
-   75           | LEFT_BRACE identifier SET_AND expression . RIGHT_BRACE
+   76           | LEFT_BRACE identifier SET_XOR expression . RIGHT_BRACE
 
     RIGHT_BRACE  shift, and go to state 170
     PLUS         shift, and go to state 52
@@ -3373,7 +3374,7 @@ State 143
    64           | expression . OR expression
    65           | expression . AND expression
    66           | expression . MOD expression
-   76           | LEFT_BRACE identifier SET_XOR expression . RIGHT_BRACE
+   77           | LEFT_BRACE identifier SET_OR expression . RIGHT_BRACE
 
     RIGHT_BRACE  shift, and go to state 171
     PLUS         shift, and go to state 52
@@ -3397,49 +3398,6 @@ State 143
 
 
 State 144
-
-   49 expression: expression . PLUS expression
-   50           | expression . MINUS expression
-   51           | expression . MUL expression
-   52           | expression . DIV expression
-   53           | expression . SHIFTL expression
-   54           | expression . SHIFTR expression
-   55           | expression . LESS expression
-   56           | expression . MORE expression
-   57           | expression . LESS_EQ expression
-   58           | expression . MORE_EQ expression
-   59           | expression . BAND expression
-   60           | expression . BOR expression
-   61           | expression . BXOR expression
-   62           | expression . EQ expression
-   63           | expression . NEQ expression
-   64           | expression . OR expression
-   65           | expression . AND expression
-   66           | expression . MOD expression
-   77           | LEFT_BRACE identifier SET_OR expression . RIGHT_BRACE
-
-    RIGHT_BRACE  shift, and go to state 172
-    PLUS         shift, and go to state 52
-    MINUS        shift, and go to state 53
-    MUL          shift, and go to state 54
-    DIV          shift, and go to state 55
-    SHIFTL       shift, and go to state 56
-    SHIFTR       shift, and go to state 57
-    LESS         shift, and go to state 58
-    MORE         shift, and go to state 59
-    LESS_EQ      shift, and go to state 60
-    MORE_EQ      shift, and go to state 61
-    BAND         shift, and go to state 62
-    BOR          shift, and go to state 63
-    OR           shift, and go to state 64
-    AND          shift, and go to state 65
-    MOD          shift, and go to state 66
-    BXOR         shift, and go to state 67
-    EQ           shift, and go to state 68
-    NEQ          shift, and go to state 69
-
-
-State 145
 
    20 stmt: IF LEFT_BRACE expression RIGHT_BRACE . stmt
    21     | IF LEFT_BRACE expression RIGHT_BRACE . stmt ELSE stmt
@@ -3465,14 +3423,14 @@ State 145
     EOS               shift, and go to state 22
 
     block       go to state 23
-    stmt        go to state 173
+    stmt        go to state 172
     set_expr    go to state 26
     empty_expr  go to state 27
     expression  go to state 28
     identifier  go to state 29
 
 
-State 146
+State 145
 
    22 stmt: FOR LEFT_BRACE for_first EOS . for_second EOS for_third RIGHT_BRACE stmt
 
@@ -3488,19 +3446,55 @@ State 146
 
     $default  reduce using rule 35 (for_second)
 
-    for_second  go to state 174
-    expression  go to state 175
+    for_second  go to state 173
+    expression  go to state 174
     identifier  go to state 37
 
 
+State 146
+
+   23 stmt: DO stmt WHILE expression . EOS
+   49 expression: expression . PLUS expression
+   50           | expression . MINUS expression
+   51           | expression . MUL expression
+   52           | expression . DIV expression
+   53           | expression . SHIFTL expression
+   54           | expression . SHIFTR expression
+   55           | expression . LESS expression
+   56           | expression . MORE expression
+   57           | expression . LESS_EQ expression
+   58           | expression . MORE_EQ expression
+   59           | expression . BAND expression
+   60           | expression . BOR expression
+   61           | expression . BXOR expression
+   62           | expression . EQ expression
+   63           | expression . NEQ expression
+   64           | expression . OR expression
+   65           | expression . AND expression
+   66           | expression . MOD expression
+
+    PLUS     shift, and go to state 52
+    MINUS    shift, and go to state 53
+    MUL      shift, and go to state 54
+    DIV      shift, and go to state 55
+    SHIFTL   shift, and go to state 56
+    SHIFTR   shift, and go to state 57
+    LESS     shift, and go to state 58
+    MORE     shift, and go to state 59
+    LESS_EQ  shift, and go to state 60
+    MORE_EQ  shift, and go to state 61
+    BAND     shift, and go to state 62
+    BOR      shift, and go to state 63
+    OR       shift, and go to state 64
+    AND      shift, and go to state 65
+    MOD      shift, and go to state 66
+    BXOR     shift, and go to state 67
+    EQ       shift, and go to state 68
+    NEQ      shift, and go to state 69
+    EOS      shift, and go to state 175
+
+
 State 147
-
-   23 stmt: DO expression WHILE stmt .
-
-    $default  reduce using rule 23 (stmt)
-
-
-State 148
 
    24 stmt: WHILE LEFT_BRACE expression RIGHT_BRACE . stmt
 
@@ -3532,14 +3526,14 @@ State 148
     identifier  go to state 29
 
 
-State 149
+State 148
 
    28 stmt: PRINT LEFT_BRACE STRINGLIT RIGHT_BRACE . EOS
 
     EOS  shift, and go to state 177
 
 
-State 150
+State 149
 
    29 stmt: PRINT LEFT_BRACE STRINGLIT COMMA . expression RIGHT_BRACE EOS
 
@@ -3557,161 +3551,161 @@ State 150
     identifier  go to state 37
 
 
-State 151
+State 150
 
    27 stmt: PRINT LEFT_BRACE expression RIGHT_BRACE . EOS
 
     EOS  shift, and go to state 179
 
 
-State 152
+State 151
 
    30 stmt: SCAN LEFT_BRACE identifier RIGHT_BRACE . EOS
 
     EOS  shift, and go to state 180
 
 
-State 153
+State 152
 
    12 stmt: identifier SET_ADD expression EOS .
 
     $default  reduce using rule 12 (stmt)
 
 
-State 154
+State 153
 
     9 stmt: identifier SET_MUL expression EOS .
 
     $default  reduce using rule 9 (stmt)
 
 
-State 155
+State 154
 
    10 stmt: identifier SET_DIV expression EOS .
 
     $default  reduce using rule 10 (stmt)
 
 
-State 156
+State 155
 
    11 stmt: identifier SET_MOD expression EOS .
 
     $default  reduce using rule 11 (stmt)
 
 
-State 157
+State 156
 
    13 stmt: identifier SET_SUB expression EOS .
 
     $default  reduce using rule 13 (stmt)
 
 
-State 158
+State 157
 
    14 stmt: identifier SET_SHIFT_L expression EOS .
 
     $default  reduce using rule 14 (stmt)
 
 
-State 159
+State 158
 
    15 stmt: identifier SET_SHIFT_R expression EOS .
 
     $default  reduce using rule 15 (stmt)
 
 
-State 160
+State 159
 
    16 stmt: identifier SET_AND expression EOS .
 
     $default  reduce using rule 16 (stmt)
 
 
-State 161
+State 160
 
    17 stmt: identifier SET_XOR expression EOS .
 
     $default  reduce using rule 17 (stmt)
 
 
-State 162
+State 161
 
    18 stmt: identifier SET_OR expression EOS .
 
     $default  reduce using rule 18 (stmt)
 
 
-State 163
+State 162
 
    71 expression: LEFT_BRACE identifier SET_ADD expression RIGHT_BRACE .
 
     $default  reduce using rule 71 (expression)
 
 
-State 164
+State 163
 
    68 expression: LEFT_BRACE identifier SET_MUL expression RIGHT_BRACE .
 
     $default  reduce using rule 68 (expression)
 
 
-State 165
+State 164
 
    69 expression: LEFT_BRACE identifier SET_DIV expression RIGHT_BRACE .
 
     $default  reduce using rule 69 (expression)
 
 
-State 166
+State 165
 
    70 expression: LEFT_BRACE identifier SET_MOD expression RIGHT_BRACE .
 
     $default  reduce using rule 70 (expression)
 
 
-State 167
+State 166
 
    72 expression: LEFT_BRACE identifier SET_SUB expression RIGHT_BRACE .
 
     $default  reduce using rule 72 (expression)
 
 
-State 168
+State 167
 
    73 expression: LEFT_BRACE identifier SET_SHIFT_L expression RIGHT_BRACE .
 
     $default  reduce using rule 73 (expression)
 
 
-State 169
+State 168
 
    74 expression: LEFT_BRACE identifier SET_SHIFT_R expression RIGHT_BRACE .
 
     $default  reduce using rule 74 (expression)
 
 
-State 170
+State 169
 
    75 expression: LEFT_BRACE identifier SET_AND expression RIGHT_BRACE .
 
     $default  reduce using rule 75 (expression)
 
 
-State 171
+State 170
 
    76 expression: LEFT_BRACE identifier SET_XOR expression RIGHT_BRACE .
 
     $default  reduce using rule 76 (expression)
 
 
-State 172
+State 171
 
    77 expression: LEFT_BRACE identifier SET_OR expression RIGHT_BRACE .
 
     $default  reduce using rule 77 (expression)
 
 
-State 173
+State 172
 
    20 stmt: IF LEFT_BRACE expression RIGHT_BRACE stmt .
    21     | IF LEFT_BRACE expression RIGHT_BRACE stmt . ELSE stmt
@@ -3721,14 +3715,14 @@ State 173
     $default  reduce using rule 20 (stmt)
 
 
-State 174
+State 173
 
    22 stmt: FOR LEFT_BRACE for_first EOS for_second . EOS for_third RIGHT_BRACE stmt
 
     EOS  shift, and go to state 182
 
 
-State 175
+State 174
 
    36 for_second: expression .
    49 expression: expression . PLUS expression
@@ -3770,6 +3764,13 @@ State 175
     NEQ      shift, and go to state 69
 
     $default  reduce using rule 36 (for_second)
+
+
+State 175
+
+   23 stmt: DO stmt WHILE expression EOS .
+
+    $default  reduce using rule 23 (stmt)
 
 
 State 176

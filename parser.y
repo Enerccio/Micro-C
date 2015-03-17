@@ -104,8 +104,12 @@ stmt : block { $$ = $<block>1; }
 	 | empty_expr { $$ = $<expr>1; }
 	 | IF LEFT_BRACE expression RIGHT_BRACE stmt %prec "then" {$$ = new IfStatement($<expr>3, $<stmt>5);}						
 	 | IF LEFT_BRACE expression RIGHT_BRACE stmt ELSE stmt {$$ = new IfStatement($<expr>3, $<stmt>5, $<stmt>7);}
-	 | FOR LEFT_BRACE for_first EOS for_second EOS for_third RIGHT_BRACE stmt { $$ = new ForStatement($<expr>3, $<expr>5, $<expr>7, $<stmt>9);}
-	 | DO expression WHILE stmt {$$ = new DoStatement($<expr>2, $<stmt>4); }
+	 | FOR LEFT_BRACE for_first EOS for_second EOS for_third RIGHT_BRACE stmt { 
+				$$ = new ForStatement($<expr>3, $<expr>5, $<expr>7, $<stmt>9);
+				$<expr>3->isStatement = true;
+				$<expr>7->isStatement = true;
+			}
+	 | DO stmt WHILE expression EOS {$$ = new DoStatement($<expr>4, $<stmt>2); }
 	 | WHILE LEFT_BRACE expression RIGHT_BRACE stmt {$$ = new DoStatement($<expr>3, $<stmt>5); }
 	 | CONT EOS { $$ = new ContinueStatement(); }
 	 | BREAK EOS { $$ = new BreakStatement(); }
@@ -121,7 +125,7 @@ set_expr : identifier SET expression {$$ = new BinaryOperation($<expr>1, $<expr>
 empty_expr : EOS {$$ = new EmptyStatement(); }
 		   ;
 
-for_first : empty_expr { $$ = $<expr>1; }
+for_first : { $$ = new EmptyStatement(); }
 		  | set_expr { $$ = $<expr>1; }
 		  ;
 
