@@ -91,5 +91,10 @@ int main(int argc, char** argv)
 		run("tmp");
 	}
 
+	if (argc == 1)
+	{
+		run(argv[0]);
+	}
+
 	return 0;
 }
