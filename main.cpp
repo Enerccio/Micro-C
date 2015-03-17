@@ -91,9 +91,9 @@ int main(int argc, char** argv)
 		run("tmp");
 	}
 
-	if (argc == 1)
+	if (argc == 2)
 	{
-		run(argv[0]);
+		run(argv[2]);
 	}
 
 	return 0;
