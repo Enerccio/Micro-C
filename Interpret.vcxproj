@@ -83,7 +83,6 @@ C:\Development\flexbison\win_flex.exe -o lexer.cpp lexer.l
     <ClCompile Include="Compiler.cpp" />
     <ClCompile Include="CuCFile.cpp" />
     <ClCompile Include="Disassembler.cpp" />
-    <ClCompile Include="Interpret.cpp" />
     <ClCompile Include="lexer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MicroCVM.cpp" />
@@ -94,7 +93,6 @@ C:\Development\flexbison\win_flex.exe -o lexer.cpp lexer.l
     <ClInclude Include="Compiler.h" />
     <ClInclude Include="CuCFile.h" />
     <ClInclude Include="Disassembler.h" />
-    <ClInclude Include="Interpret.h" />
     <ClInclude Include="MicroCVM.h" />
     <ClInclude Include="opcode.h" />
     <ClInclude Include="parser.hpp" />
