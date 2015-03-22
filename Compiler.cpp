@@ -132,7 +132,10 @@ bool Compiler::Compile()
 	Optimize();
 
 	vector<OpData*> v;
+
+	v.push_back(new OpData(PUSH_FRAME));
 	CompileBlock(ast, &v);
+	v.push_back(new OpData(POP_FRAME));
 
 	unsigned int outputLen = 0;
 	for (unsigned int i = 0; i < v.size(); i++)
@@ -258,13 +261,11 @@ void Compiler::Optimize()
 
 void Compiler::CompileBlock(Block* block, vector<OpData*>* v)
 {
-	PUSH_STATIC_FRAME();
 	StatementList::iterator it;
 	for (it = block->statements.begin(); it != block->statements.end(); it++)
 	{
 		CompileStatement(*it, v);
 	}
-	POP_STATIC_FRAME();
 }
 
 void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
@@ -353,33 +354,29 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 							 {
 											  CompileStatement(bop->expression1, v);
 											  OpData* jmp = new OpData;
-											  OpData* sjmp = new OpData;
-											  OpData* tjmp = new OpData;
 											  v->push_back(jmp);
 											  if (bop->type == O_LOG_AND) jmp->code = JZERO; else jmp->code = JNZERO;
 											  Add(3);
 											  forward_map.insert(make_pair(jmp->cnt, (unsigned short)0));
 											  CompileStatement(bop->expression2, v);
-											  v->push_back(sjmp);
+											  v->push_back(new OpData(JMP, (signed short)3));
 											  Add(3);
-											  forward_map.insert(make_pair(sjmp->cnt, (unsigned short)0));
-											  if (bop->type == O_LOG_AND) sjmp->code = JZERO; else sjmp->code = JNZERO;
-											  v->push_back(new OpData(PUSH_CONST, output->AddConstant(1)));
-											  v->push_back(new OpData(JMP, (signed short)4));
-											  Add(9);
-											  v->push_back(new OpData(PUSH_CONST, output->AddConstant(0)));
 											  jmp->sarg = (signed short)forward_map[jmp->cnt];
-											  sjmp->sarg = (signed short)forward_map[sjmp->cnt];
 											  forward_map.erase(jmp->cnt);
-											  forward_map.erase(sjmp->cnt);
+											  if (bop->type == O_LOG_AND) 
+												  v->push_back(new OpData(PUSH_CONST, output->AddConstant(0)));
+											  else 
+												  v->push_back(new OpData(PUSH_CONST, output->AddConstant(1)));
+											  Add(3);
 											  v->push_back(new OpData());
+											  Add(1);
 							 } break;
 							 case O_SET:
 							 {
 												CompileStatement(bop->expression2, v);
 												v->push_back(new OpData(STORE_VAR, output->AddLiterar(((Identifier*)bop->expression1)->ident)));
 												v->push_back(new OpData(PUSH_VAR, output->AddLiterar(((Identifier*)bop->expression1)->ident)));
-												Add(1);
+												Add(6);
 							 } break;
 							 case O_SET_MUL:
 							 case O_SET_DIV:
@@ -407,7 +404,8 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 											   case O_SET_XOR: v->push_back(new OpData(BXOR)); break;
 											   }
 											   v->push_back(new OpData(STORE_VAR, output->AddLiterar(((Identifier*)bop->expression1)->ident)));
-											   Add(4);
+											   v->push_back(new OpData(PUSH_VAR, output->AddLiterar(((Identifier*)bop->expression1)->ident)));
+											   Add(7);
 							 } break;
 							 default:
 							 {
@@ -423,6 +421,7 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 										case O_SHIFT_LEFT: v->push_back(new OpData(LSHIFT)); break;
 										case O_SHIFT_RIGHT: v->push_back(new OpData(RSHIFT)); break;
 										case O_EQUALS: v->push_back(new OpData(EQ)); break;
+										case O_NEQUALS: v->push_back(new OpData(EQ)); Add(1); v->push_back(new OpData(UNEG)); break;
 										case O_LESS: v->push_back(new OpData(LESS)); break;
 										case O_MORE: v->push_back(new OpData(MORE)); break;
 										case O_LESS_EQ: v->push_back(new OpData(LEQ)); break;
@@ -463,12 +462,13 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 							 OpData* sjmp = new OpData(JMP);
 							 v->push_back(sjmp);
 							 Add(3);
+							 jmp->sarg = (signed short)forward_map[jmp->cnt];
+							 forward_map.erase(jmp->cnt);
 							 forward_map.insert(make_pair(sjmp->cnt, (unsigned short)0));
 
 							 CompileStatement(ifs->fail, v);
-							 jmp->sarg = (signed short)forward_map[jmp->cnt];
+							 
 							 sjmp->sarg = (signed short)forward_map[sjmp->cnt];
-							 forward_map.erase(jmp->cnt);
 							 forward_map.erase(sjmp->cnt);
 							 v->push_back(new OpData(NOP));
 							 Add(1);
@@ -502,12 +502,6 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 	} break;
 	case CONTINUE_STATEMENT:
 	{
-							   for (int i = 0; i < frame->frameCount; i++)
-							   {
-								   v->push_back(new OpData(POP_FRAME));
-								   Add(1);
-							   }
-
 							   v->push_back(new OpData(JMP, ((signed short)-((signed short)frame->startPos))));
 							   Add(3);
 	} break;
@@ -516,13 +510,13 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 							OpData* jmp = new OpData(JMP);
 							v->push_back(jmp);
 							Add(3);
+
 							forward_map.insert(make_pair(jmp->cnt, (unsigned short)0));
 
 							this->frame->endHooks.push_back(jmp);
 	} break;
 	case FOR_STATEMENT:
 	{
-						  PUSH_STATIC_FRAME();
 
 						  ForStatement* fs = (ForStatement*)st;
 						  CompileStatement(fs->init, v);
@@ -563,11 +557,9 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 						  PopFrame();
 						  v->push_back(new OpData());
 						  Add(1);
-						  POP_STATIC_FRAME();
 	} break;
 	case DO_STATEMENT:
 	{
-						 PUSH_STATIC_FRAME();
 
 						 DoStatement* ds = (DoStatement*)st;
 						 PushFrame();
@@ -603,29 +595,18 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 						 PopFrame();
 						 v->push_back(new OpData());
 						 Add(1);
-						 POP_STATIC_FRAME();
 	} break;
 	case WHILE_STATEMENT:
 	{
-							PUSH_STATIC_FRAME();
 
 							WhileStatement* ws = (WhileStatement*)st;
 							PushFrame();
-
-							OpData* skipThird = new OpData(JMP);
-							v->push_back(skipThird);
-							Add(3);
-							forward_map.insert(make_pair(skipThird->cnt, (unsigned short)0));
-
-							frame->startPos = 0;
 
 							CompileStatement(ws->test, v);
 							OpData* jmpToEnd = new OpData(JZERO);
 							v->push_back(jmpToEnd);
 							Add(3);
 							forward_map.insert(make_pair(jmpToEnd->cnt, (unsigned short)0));
-							skipThird->sarg = (signed short)forward_map[skipThird->cnt];
-							forward_map.erase(skipThird->cnt);
 
 							CompileStatement(ws->exec, v);
 							v->push_back(new OpData(JMP, (signed short)-(signed int)frame->startPos));
@@ -643,7 +624,6 @@ void Compiler::CompileStatement(Statement* st, vector<OpData*>* v)
 							PopFrame();
 							v->push_back(new OpData());
 							Add(1);
-							POP_STATIC_FRAME();
 	} break;
 	}
 }

@@ -22,18 +22,6 @@ using namespace std;
 typedef unordered_map<unsigned long long, unsigned short> Backmap;
 typedef list<OpData*> DList;
 
-#define PUSH_STATIC_FRAME() \
-	v->push_back(new OpData(PUSH_FRAME)); \
-	if (frame != NULL) \
-	++frame->frameCount; \
-	Add(1)
-
-#define POP_STATIC_FRAME() \
-	v->push_back(new OpData(POP_FRAME)); \
-	Add(1); \
-	if (frame != NULL) \
-		--frame->frameCount
-
 struct Frame
 {
 	Frame(){ startPos = 0; parent = NULL; frameCount = 0; }
@@ -83,8 +71,11 @@ private:
 		{
 			iter->second += s;
 		}
-		if (frame != NULL)
-			frame->startPos += s;
+		Frame* frm = frame;
+		while (frm != NULL){
+			frm->startPos += s;
+			frm = frm->parent;
+		}
 	}
 };
 

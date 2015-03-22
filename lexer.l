@@ -40,6 +40,8 @@ hex		    0[xX]{hextail}
 "\t"	                ;
 "\n"					;
 "\r"					;
+'[^']'					yylval.c=yytext[1]; return NUMBER;
+"'\\''"					yylval.c='\''; return NUMBER;
 {binary}			    { yylval.c = 0; for (char *p=yytext+2;*p;++p) { yylval.c*=2; yylval.c+= *p-'0'; } return NUMBER; }
 {hex}			        { 
 							yylval.c = 0; 

@@ -163,6 +163,8 @@ void MicroCVM::PopStack()
 {
 	if (stack.size() == 0)
 		ERROR("Stack is empty but POP called");
+
+	stack.pop_back();
 }
 
 void MicroCVM::DupStack()
@@ -179,7 +181,7 @@ void MicroCVM::UnaryOperation(OpCode o)
 	if (stack.size() < 1)
 		ERROR("Stack is empty but unary operation was called");
 
-	int op = *stack.rbegin();
+	int op = stack.back();
 	stack.pop_back();
 	int result;
 
@@ -204,9 +206,9 @@ void MicroCVM::BinaryOperation(OpCode o)
 	if (stack.size() < 2)
 		ERROR("Stack contains less than 2 items but binary operation was called");
 
-	int op2 = *stack.rbegin();
+	int op2 = stack.back();
 	stack.pop_back();
-	int op1 = *stack.rbegin();
+	int op1 = stack.back();
 	stack.pop_back();
 	int result;
 
@@ -267,7 +269,7 @@ void MicroCVM::PrintStack()
 	if (stack.size() < 1)
 		ERROR("Stack is empty but unary operation was called");
 
-	int value = *stack.rbegin();
+	int value = stack.back();
 	stack.pop_back();
 
 	DEBUG(value);
@@ -289,7 +291,7 @@ void MicroCVM::JumpIfZero(short pcMod)
 	if (stack.size() < 1)
 		ERROR("Stack is empty but JZERO was called");
 
-	int val = *stack.rbegin();
+	int val = stack.back();
 	stack.pop_back();
 	if (val == 0)
 	{
@@ -302,7 +304,7 @@ void MicroCVM::JumpIfNotZero(short pcMod)
 	if (stack.size() < 1)
 		ERROR("Stack is empty but JNZERO was called");
 	
-	int val = *stack.rbegin();
+	int val = stack.back();
 	stack.pop_back();
 	if (val != 0)
 	{
@@ -312,12 +314,8 @@ void MicroCVM::JumpIfNotZero(short pcMod)
 
 void MicroCVM::PushVar(unsigned short id)
 {
-	string var;
-	if (!this->data->GetIdentifier(id, &var))
-		ERROR("Corrupter identifier data");
-
 	int value = 0;
-	if (!FindValue(var, this->frame, &value))
+	if (!FindValue(id, this->frame, &value))
 		ERROR("Unknown variable");
 	stack.push_back(value);
 }
@@ -348,7 +346,7 @@ void MicroCVM::PrintFormatted(unsigned short id)
 	if (stack.size() < 1)
 		ERROR("Stack is empty but PRINT_FRM was called");
 
-	int value = *stack.rbegin();
+	int value = stack.back();
 	stack.pop_back();
 
 	printf(lit.c_str(), value);
@@ -363,14 +361,10 @@ void MicroCVM::StoreVar(unsigned short id)
 	if (stack.size() < 1)
 		ERROR("Stack is empty but STORE_VAR was called");
 
-	string var;
-	if (!this->data->GetIdentifier(id, &var))
-		ERROR("Corrupter identifier data");
-
-	int value = *stack.rbegin();
+	int value = stack.back();
 	stack.pop_back();
 
-	this->frame->map[var] = value;
+	this->frame->map[id] = value;
 }
 
 void MicroCVM::Scan(unsigned short id)
@@ -378,14 +372,10 @@ void MicroCVM::Scan(unsigned short id)
 	if (this->frame == NULL)
 		ERROR("VarFrame is empty, cannot store variables");
 
-	string var;
-	if (!this->data->GetIdentifier(id, &var))
-		ERROR("Corrupter identifier data");
-
 	int value;
 	cin >> value;
 
-	this->frame->map[var] = value;
+	this->frame->map[id] = value;
 }
 
 OpCode MicroCVM::NextInstruction(short* addedValue)
@@ -463,15 +453,15 @@ OpCode MicroCVM::NextInstruction(short* addedValue)
 	return o;
 }
 
-bool MicroCVM::FindValue(string s, VarFrame* stack, int* v)
+bool MicroCVM::FindValue(unsigned short id, VarFrame* stack, int* v)
 {
 	if (stack == NULL)
 		return false;
-	VariableMap::iterator it = stack->map.find(s);
+	VariableMap::iterator it = stack->map.find(id);
 	if (it != stack->map.end())
 	{
 		*v = it->second;
 		return true;
 	}
-	return FindValue(s, stack->previous, v);
+	return FindValue(id, stack->previous, v);
 }

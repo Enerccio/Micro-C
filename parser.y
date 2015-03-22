@@ -110,7 +110,7 @@ stmt : block { $$ = $<block>1; }
 				$<expr>7->isStatement = true;
 			}
 	 | DO stmt WHILE expression EOS {$$ = new DoStatement($<expr>4, $<stmt>2); }
-	 | WHILE LEFT_BRACE expression RIGHT_BRACE stmt {$$ = new DoStatement($<expr>3, $<stmt>5); }
+	 | WHILE LEFT_BRACE expression RIGHT_BRACE stmt {$$ = new WhileStatement($<expr>3, $<stmt>5); }
 	 | CONT EOS { $$ = new ContinueStatement(); }
 	 | BREAK EOS { $$ = new BreakStatement(); }
 	 | PRINT LEFT_BRACE expression RIGHT_BRACE EOS { $$ = new PrintExpressionStatement($<expr>3); }
@@ -165,17 +165,17 @@ expression : NUMBER { $$ = new Int($1); }
 		   | expression OR expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_LOG_OR); }
 		   | expression AND expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_LOG_AND); }
 		   | expression MOD expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_MOD); }
-		   | LEFT_BRACE set_expr RIGHT_BRACE { $$ = $<expr>1; }
-		   | LEFT_BRACE identifier SET_MUL expression RIGHT_BRACE { $$ = new BinaryOperation($<expr>2, $<expr>4, O_SET_MUL); }
-		   | LEFT_BRACE identifier SET_DIV expression RIGHT_BRACE { $$ = new BinaryOperation($<expr>2, $<expr>4, O_SET_DIV); }
-		   | LEFT_BRACE identifier SET_MOD expression RIGHT_BRACE { $$ = new BinaryOperation($<expr>2, $<expr>4, O_SET_MOD); }
-		   | LEFT_BRACE identifier SET_ADD expression RIGHT_BRACE { $$ = new BinaryOperation($<expr>2, $<expr>4, O_SET_ADD); }
-		   | LEFT_BRACE identifier SET_SUB expression RIGHT_BRACE { $$ = new BinaryOperation($<expr>2, $<expr>4, O_SET_SUB); }
-		   | LEFT_BRACE identifier SET_SHIFT_L expression RIGHT_BRACE { $$ = new BinaryOperation($<expr>2, $<expr>4, O_SET_SHIFT_L); }
-		   | LEFT_BRACE identifier SET_SHIFT_R expression RIGHT_BRACE { $$ = new BinaryOperation($<expr>2, $<expr>4, O_SET_SHIFT_R); }
-		   | LEFT_BRACE identifier SET_AND expression RIGHT_BRACE { $$ = new BinaryOperation($<expr>2, $<expr>4, O_SET_AND); }
-		   | LEFT_BRACE identifier SET_XOR expression RIGHT_BRACE { $$ = new BinaryOperation($<expr>2, $<expr>4, O_SET_XOR); }
-		   | LEFT_BRACE identifier SET_OR expression RIGHT_BRACE { $$ = new BinaryOperation($<expr>2, $<expr>4, O_SET_OR); }
+		   | set_expr { $$ = $<expr>1; }
+		   | identifier SET_MUL expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_SET_MUL); }
+		   | identifier SET_DIV expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_SET_DIV); }
+		   | identifier SET_MOD expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_SET_MOD); }
+		   | identifier SET_ADD expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_SET_ADD); }
+		   | identifier SET_SUB expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_SET_SUB); }
+		   | identifier SET_SHIFT_L expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_SET_SHIFT_L); }
+		   | identifier SET_SHIFT_R expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_SET_SHIFT_R); }
+		   | identifier SET_AND expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_SET_AND); }
+		   | identifier SET_XOR expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_SET_XOR); }
+		   | identifier SET_OR expression { $$ = new BinaryOperation($<expr>1, $<expr>3, O_SET_OR); }
 		   | LEFT_BRACE expression RIGHT_BRACE { $$ = $2; }
 		   ;
 

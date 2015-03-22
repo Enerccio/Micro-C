@@ -5,13 +5,13 @@
 
 #include <unordered_map>
 #include <string>
-#include <list>
+#include <vector>
 #include <iostream>
 
 using namespace std;
 
-typedef unordered_map<string, int> VariableMap;
-typedef list<int> Stack;
+typedef unordered_map<unsigned short, int> VariableMap;
+typedef vector<int> Stack;
 
 #define ERROR(str) \
 	do \
@@ -40,7 +40,7 @@ public:
 	void Iterate();
 private:
 	OP::OpCode NextInstruction(short* addedValue);
-	bool FindValue(string variable, VarFrame* frame, int* v);
+	bool FindValue(unsigned short id, VarFrame* frame, int* v);
 
 	void PushFrame();
 	void PopFrame();
@@ -57,7 +57,7 @@ private:
 	void PrintLiterar(unsigned short id);
 	void PrintFormatted(unsigned short id);
 	void StoreVar(unsigned short id);
-	void Scan(unsigned short addedValue);
+	void Scan(unsigned short id);
 
 	CuCFile* data;
 	int ip;

@@ -50,6 +50,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <Profile>true</Profile>
     </Link>
     <CustomBuildStep>
       <Command>C:\Development\flexbison\win_bison.exe -d -o parser.cpp parser.y --debug --verbose

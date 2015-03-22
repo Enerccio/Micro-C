@@ -170,7 +170,7 @@ void Disassembler::Dissassemble(ofstream& out, CuCFile* code)
 			param = readShort(code->code + codePtr);
 			code->GetString(param, &ident);
 			sprintf(buf2, "PRINT formatted string with format <%i>=\"%s\" and stack", param, ident.c_str());
-			sprintf(buffer, format_tripple, codePtr - 1, "PRINT_LIT", (int)o, (code->code + codePtr)[0], (code->code + codePtr + 1)[0], buf2);
+			sprintf(buffer, format_tripple, codePtr - 1, "PRINT_FRM", (int)o, (code->code + codePtr)[0], (code->code + codePtr + 1)[0], buf2);
 			codePtr += 2;
 			break;
 		case STORE_VAR:
