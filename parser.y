@@ -1,6 +1,7 @@
 %{
 	#define YY_NO_UNISTD_H
 	#define YYERROR_VERBOSE
+
 	#include "ast.h"
 
 	Block* program;

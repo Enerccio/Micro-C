@@ -38,10 +38,9 @@ public:
 	Compiler();
 	virtual ~Compiler();
 
-	bool Compile(FILE* in, CuCFile* out, char* fnamein, bool debug, bool checkTimestamp);
+	bool Compile(FILE* in, CuCFile* out, char* fnamein, bool debug);
 
 private:
-	bool CheckTimestamp();
 	void Parse();
 	bool CheckErrors();
 	bool CheckForCorrectLoops(Statement* block, unsigned int loopCount);

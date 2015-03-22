@@ -19,7 +19,11 @@ void compile(char* from, char* to)
 
 	Compiler cmp; 
 
-	bool compiled = cmp.Compile(input, output, from, true, false);
+#ifdef DEBUG_ON
+	bool compiled = cmp.Compile(input, output, from, true);
+#else
+	bool compiled = cmp.Compile(input, output, from, false);
+#endif
 
 	fclose(input);
 
@@ -72,9 +76,6 @@ void run(char* source)
 
 int main(int argc, char** argv)
 {
-	for (int i = 0; i<argc; i++)
-		printf("%s\n", argv[i]);
-
 	if (argc > 3){
 		if (strcmp(argv[1], "-c") == 0)
 			compile(argv[2], argv[3]);
@@ -93,7 +94,10 @@ int main(int argc, char** argv)
 
 	if (argc == 2)
 	{
-		run(argv[1]);
+		std::string tmp(argv[1]);
+		std::string res = tmp + ".cmC";
+		compile(argv[1], (char*)res.c_str());
+		run((char*)res.c_str());
 	}
 
 	return 0;

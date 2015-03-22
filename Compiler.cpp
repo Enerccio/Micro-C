@@ -30,14 +30,12 @@ Compiler::~Compiler()
 {
 }
 
-bool Compiler::Compile(FILE* in, CuCFile* out, char* fnamein, bool debug, bool checkTimestamp)
+bool Compiler::Compile(FILE* in, CuCFile* out, char* fnamein, bool debug)
 {
 	input = in;
 	output = out;
 	this->debug = debug;
 	this->fnamein = fnamein;
-	if (checkTimestamp && CheckTimestamp())
-		return false;
 
 	if (debug)
 		cout << "uC Compiler (C++): " << endl;
@@ -60,11 +58,6 @@ void Compiler::Parse()
 	yyparse();
 
 	ast = program;
-}
-
-bool Compiler::CheckTimestamp()
-{
-	return false;
 }
 
 bool Compiler::CheckErrors()
